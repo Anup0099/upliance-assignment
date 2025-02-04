@@ -5,10 +5,10 @@ import { setUserData } from "../redux/userSlice";
 
 // Function to remove HTML tags
 const removeHtmlTags = (html) => {
-  return html.replace(/<[^>]+>/g, ''); // This will remove anything that is between < and >
+  return html.replace(/<[^>]+>/g, ""); // This will remove anything that is between < and >
 };
 
-const UserEditor = () => {
+const UserEditor = ({resetForm}) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
@@ -20,6 +20,14 @@ const UserEditor = () => {
     address: removeHtmlTags(user.address),
     bio: removeHtmlTags(user.bio),
   });
+  const resetUserData = () => {
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+    });
+  };
 
   const handleSave = () => {
     dispatch(setUserData(formData));

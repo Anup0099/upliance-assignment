@@ -22,12 +22,16 @@ const signInWithGoogle = async () => {
         return result.user;
 
     } catch (error) {
-        console.error(error);
+        console.error("Google Sign In error", error);
     }
 };
 
-const logout = async () => {
-    await signOut(auth);
-}
+// const logout = async () => {
+//     try {
+//         await signOut(auth);
+//     } catch (error) {
+//         console.error("Logout error", error);
+//     }
+// }
 
-export { signInWithGoogle, logout, auth };
+export { signInWithGoogle, signOut, auth };
