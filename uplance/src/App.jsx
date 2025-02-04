@@ -16,7 +16,7 @@ function App() {
             User Form
           </Button>
           <Button component={Link} to="/editor" variant="contained">
-            Edit Bio
+            Edit User
           </Button>
           <Button component={Link} to="/profile" variant="contained">
             User Profile

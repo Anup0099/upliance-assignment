@@ -1,153 +1,115 @@
-import { useEffect, useState } from "react";
+import { Typography, Box, Button, TextField } from "@mui/material";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {  setUserData, ressetUserData,setUserBio  } from "../redux/userSlice";
-import { useBeforeUnload } from "react-use";
-import {
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Grid,
-} from "@mui/material";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import { setUserData } from "../redux/userSlice";
 
-const UserForm = () => {
+// Function to remove HTML tags
+const removeHtmlTags = (html) => {
+  return html.replace(/<[^>]+>/g, ''); // This will remove anything that is between < and >
+};
+
+const UserEditor = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
+  // Initialize formData and remove any HTML tags from user data
   const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    address: user.address,
-    phone: user.phone,
-    bio: user.bio, 
+    name: removeHtmlTags(user.name),
+    email: removeHtmlTags(user.email),
+    phone: removeHtmlTags(user.phone),
+    address: removeHtmlTags(user.address),
+    bio: removeHtmlTags(user.bio),
   });
 
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-  useEffect(() => {
-    setFormData({
-      name: user.name,
-      email: user.email,
-      address: user.address,
-      phone: user.phone,
-      bio: user.bio, 
-    });
-  }, [user]);
-
-  // Warn before closing if there are unsaved changes
-  useBeforeUnload(
-    hasUnsavedChanges,
-    "You have unsaved changes. Are you sure you want to leave?"
-  );
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setHasUnsavedChanges(true);
-  };
-
-  const handleBioChange = (value) => {
-    setFormData({ ...formData, bio: value });
-    setHasUnsavedChanges(true);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSave = () => {
     dispatch(setUserData(formData));
-    setHasUnsavedChanges(false);
     alert("User data saved successfully!");
   };
 
-  const handleReset = () => {
-    dispatch(ressetUserData());
-    setHasUnsavedChanges(false);
+  const handleChange = (field) => (e) => {
+    setFormData({ ...formData, [field]: e.target.value });
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ padding: 4, marginTop: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          User Form
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          User ID: <strong>{user.id}</strong>
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-            {/* Bio Field using React Quill */}
-            <Grid item xs={12}>
-              <Typography variant="h6">Bio</Typography>
-              <ReactQuill value={formData.bio} onChange={handleBioChange} />
-            </Grid>
-            <Grid item xs={6}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-              >
-                Save
-              </Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button
-                onClick={handleReset}
-                variant="contained"
-                color="secondary"
-                fullWidth
-              >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
-    </Container>
+    <Box
+      sx={{
+        maxWidth: 600,
+        mx: "auto",
+        p: 3,
+        bgcolor: "white",
+        borderRadius: 2,
+        boxShadow: 3,
+      }}
+    >
+      <Typography variant="h5" mb={2}>
+        Edit User Details
+      </Typography>
+
+      {/* Name Field */}
+      <Typography variant="h6">Name</Typography>
+      <TextField
+        fullWidth
+        value={formData.name}
+        onChange={handleChange("name")}
+        variant="outlined"
+        sx={{ mb: 2 }}
+      />
+
+      {/* Email Field */}
+      <Typography variant="h6" mt={2}>
+        Email
+      </Typography>
+      <TextField
+        fullWidth
+        value={formData.email}
+        onChange={handleChange("email")}
+        variant="outlined"
+        sx={{ mb: 2 }}
+      />
+
+      {/* Phone Field */}
+      <Typography variant="h6" mt={2}>
+        Phone
+      </Typography>
+      <TextField
+        fullWidth
+        value={formData.phone}
+        onChange={handleChange("phone")}
+        variant="outlined"
+        sx={{ mb: 2 }}
+      />
+
+      {/* Address Field */}
+      <Typography variant="h6" mt={2}>
+        Address
+      </Typography>
+      <TextField
+        fullWidth
+        value={formData.address}
+        onChange={handleChange("address")}
+        variant="outlined"
+        sx={{ mb: 2 }}
+      />
+
+      {/* Bio Field */}
+      <Typography variant="h6" mt={2}>
+        Bio
+      </Typography>
+      <TextField
+        fullWidth
+        value={formData.bio}
+        onChange={handleChange("bio")}
+        variant="outlined"
+        multiline
+        rows={4}
+        sx={{ mb: 2 }}
+      />
+
+      <Button variant="contained" color="primary" onClick={handleSave}>
+        Save
+      </Button>
+    </Box>
   );
 };
 
-export default UserForm;
+export default UserEditor;
